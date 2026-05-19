@@ -1,3 +1,33 @@
+/**
+ * TH:
+ * BrandShowcase — Section แสดงแบรนด์ที่ featured บนหน้าแรก
+ * เป็น Server Component — ไม่ต้องการ interactivity
+ * กรอง brands ที่ featured: true (5 จาก 6 แบรนด์)
+ *
+ * Layout: grid 2→3→3 columns
+ * - กว้างกว่า CategoryGrid เพราะแต่ละ card ต้องการพื้นที่ description มากกว่า
+ *
+ * Brand card:
+ * - Country badge (top-left)
+ * - Brand name + description
+ * - Product count + "View all" arrow (hover-reveal)
+ * - Glow ring overlay เมื่อ hover
+ *
+ * EN:
+ * BrandShowcase — homepage section displaying featured brands.
+ * Server Component — pure CSS hover effects.
+ * Filters for brands with featured: true (5 of 6 brands).
+ *
+ * Layout: 2→3→3 column grid
+ * - Wider than CategoryGrid to accommodate brand descriptions
+ *
+ * Brand card:
+ * - Country badge (top-left)
+ * - Brand name + description
+ * - Product count + "View all" (reveals on hover)
+ * - Violet glow ring overlay on hover
+ */
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { brands } from "@/lib/data";
@@ -6,11 +36,21 @@ import SectionHeading from "@/components/common/SectionHeading";
 import { Badge } from "@/components/ui/badge";
 
 export default function BrandShowcase() {
+  /**
+   * TH:
+   * featuredBrands — filter เฉพาะ brands ที่ featured: true
+   * ทำที่ component level (ไม่ใช่ data.ts) เพราะเป็น presentation concern
+   *
+   * EN:
+   * featuredBrands — only brands marked featured: true.
+   * Filtered at component level (not data.ts) as it's a display concern.
+   */
   const featuredBrands = brands.filter((b) => b.featured);
 
   return (
     <section className="py-24 lg:py-32 bg-zinc-950/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
         <FadeIn>
           <SectionHeading
             eyebrow="Official Brands"
@@ -20,6 +60,7 @@ export default function BrandShowcase() {
           />
         </FadeIn>
 
+        {/* TH: Brand grid — stagger delay | EN: Staggered brand grid */}
         <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
           {featuredBrands.map((brand, i) => (
             <FadeIn key={brand.id} delay={i * 0.08}>
@@ -27,7 +68,7 @@ export default function BrandShowcase() {
                 href={`/brands/${brand.slug}`}
                 className="group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-800/60 bg-zinc-900/30 p-6 transition-all duration-300 hover:border-violet-800/40 hover:bg-zinc-900/60 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-950/20"
               >
-                {/* Country badge */}
+                {/* TH: Country badge | EN: Country of origin badge */}
                 <Badge variant="outline" className="mb-4 w-fit text-[10px]">
                   {brand.country}
                 </Badge>
@@ -35,6 +76,7 @@ export default function BrandShowcase() {
                 <h3 className="font-display text-xl font-bold text-zinc-100 group-hover:text-violet-300 transition-colors">
                   {brand.name}
                 </h3>
+                {/* TH: Description — line-clamp-2 | EN: 2-line description */}
                 <p className="mt-2 text-sm leading-relaxed text-zinc-500 line-clamp-2">
                   {brand.description}
                 </p>
@@ -43,18 +85,20 @@ export default function BrandShowcase() {
                   <span className="text-xs text-zinc-600">
                     {brand.productCount}+ products
                   </span>
+                  {/* TH: "View all" — opacity-0 → opacity-100 เมื่อ hover | EN: "View all" — fades in on hover */}
                   <span className="flex items-center gap-1 text-xs font-medium text-violet-400 opacity-0 transition-all group-hover:opacity-100">
                     View all <ArrowRight className="h-3 w-3" />
                   </span>
                 </div>
 
-                {/* Hover glow */}
+                {/* TH: Violet glow ring — absolute inset, แสดงเมื่อ hover | EN: Violet ring overlay — appears on hover */}
                 <div className="absolute inset-0 rounded-2xl opacity-0 ring-1 ring-violet-500/30 transition-opacity group-hover:opacity-100" />
               </Link>
             </FadeIn>
           ))}
         </div>
 
+        {/* TH: "View all brands" link ด้านล่าง grid | EN: "View all brands" link below grid */}
         <FadeIn delay={0.3}>
           <div className="mt-8 text-center">
             <Link

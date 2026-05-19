@@ -1,40 +1,107 @@
+/**
+ * TH:
+ * globals.css — ไฟล์ CSS หลักของโปรเจกต์
+ * ทำหน้าที่ 3 อย่าง:
+ * 1. Import TailwindCSS v4
+ * 2. กำหนด design tokens (สี, fonts) ผ่าน @theme { }
+ * 3. กำหนด base styles และ custom utility classes
+ *
+ * หมายเหตุ: TailwindCSS v4 ใช้ CSS-first configuration
+ * ไม่มี tailwind.config.ts — ทุก custom value กำหนดที่นี่ด้วย @theme
+ *
+ * EN:
+ * globals.css — the project's master stylesheet.
+ * Serves three purposes:
+ * 1. Import TailwindCSS v4
+ * 2. Define design tokens (colors, fonts) via @theme { }
+ * 3. Define base styles and custom utility classes
+ *
+ * Note: TailwindCSS v4 uses CSS-first configuration.
+ * There is NO tailwind.config.ts — all custom values live here in @theme.
+ */
+
+/* TH: Import TailwindCSS v4 (แตกต่างจาก v3 ที่ใช้ @tailwind directives) */
+/* EN: Import TailwindCSS v4 (different from v3 which used @tailwind directives) */
 @import "tailwindcss";
 
+/**
+ * TH:
+ * @theme — Design Token Block (TailwindCSS v4 specific)
+ * ทุก CSS variable ที่กำหนดใน @theme จะถูก Tailwind ใช้สร้าง utility classes อัตโนมัติ
+ * เช่น --color-primary: #7c3aed → สามารถใช้ bg-primary, text-primary, border-primary ได้
+ *
+ * Font variables ถูก map ใน layout.tsx ผ่าน next/font/google
+ * --font-sans → Inter (body text)
+ * --font-display → Space Grotesk (headings)
+ *
+ * EN:
+ * @theme — TailwindCSS v4's design token block.
+ * Every CSS variable here is exposed as Tailwind utility classes automatically.
+ * E.g., --color-primary: #7c3aed → you can use bg-primary, text-primary, border-primary.
+ *
+ * Font variables are populated by next/font/google in layout.tsx:
+ * --font-sans → Inter (body text)
+ * --font-display → Space Grotesk (headings, applied via "font-display" class)
+ */
 @theme {
+  /* TH: fonts — ถูก set โดย next/font ใน layout.tsx | EN: populated by next/font in layout.tsx */
   --font-sans: var(--font-inter);
   --font-display: var(--font-space-grotesk);
 
+  /* TH: Primary color — violet สำหรับ CTAs, active states, links | EN: violet — used for CTAs, active states, links */
   --color-primary: #7c3aed;
   --color-primary-light: #8b5cf6;
   --color-primary-dark: #6d28d9;
+
+  /* TH: Accent color — amber/gold สำหรับ sale badges, highlights | EN: amber/gold — sale badges, highlights */
   --color-accent: #f59e0b;
   --color-accent-light: #fbbf24;
-  --color-surface: #111116;
-  --color-surface-2: #18181f;
-  --color-surface-3: #1f1f28;
+
+  /* TH: Surface colors — ชั้น background ต่างๆ สำหรับ depth | EN: layered dark backgrounds for depth */
+  --color-surface: #111116;    /* TH: card backgrounds | EN: card backgrounds */
+  --color-surface-2: #18181f;  /* TH: slightly lighter | EN: slightly lighter */
+  --color-surface-3: #1f1f28;  /* TH: lightest surface | EN: lightest surface layer */
+
+  /* TH: Border colors — subtle เพื่อ glass aesthetic | EN: subtle borders for the glass aesthetic */
   --color-border: rgba(255, 255, 255, 0.07);
   --color-border-hover: rgba(255, 255, 255, 0.14);
 }
 
+/**
+ * TH:
+ * @layer base — CSS resets และ base styles ที่ใช้ทั่วทั้งเว็บ
+ * TailwindCSS v4 inject styles เหล่านี้ก่อน utility classes
+ *
+ * EN:
+ * @layer base — global resets and base styles applied across the entire site.
+ * TailwindCSS v4 injects these before utility classes.
+ */
 @layer base {
   *, *::before, *::after {
     box-sizing: border-box;
   }
 
   html {
+    /* TH: smooth scroll สำหรับ anchor links | EN: smooth scroll for anchor links */
     scroll-behavior: smooth;
+    /* TH: ป้องกัน iOS font scaling เมื่อ rotate | EN: prevent iOS font scaling on rotation */
     -webkit-text-size-adjust: 100%;
   }
 
   body {
+    /* TH: สีพื้นหลังหลักของทั้งเว็บ | EN: site-wide dark background */
     background-color: #09090f;
+    /* TH: สีข้อความหลัก (off-white) | EN: primary text color (off-white) */
     color: #f4f4f8;
     font-family: var(--font-sans);
+    /* TH: OpenType features สำหรับ Inter font | EN: OpenType features for better Inter rendering */
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    /* TH: font smoothing สำหรับ retina displays | EN: crisp font rendering on retina */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* TH: Headings ใช้ Space Grotesk และ tighter letter-spacing | EN: headings use display font with tighter tracking */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-weight: 700;
@@ -42,13 +109,36 @@
     line-height: 1.1;
   }
 
+  /* TH: Custom scrollbar — thin, dark theme | EN: custom scrollbar styled for dark theme */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: #09090f; }
   ::-webkit-scrollbar-thumb { background: #3f3f52; border-radius: 99px; }
   ::-webkit-scrollbar-thumb:hover { background: #52526a; }
 }
 
+/**
+ * TH:
+ * @layer utilities — Custom utility classes เพิ่มเติมจาก Tailwind
+ * ใช้ @layer utilities เพื่อให้ Tailwind รู้จัก specificity ที่ถูกต้อง
+ * และสามารถ override ด้วย Tailwind utilities ได้
+ *
+ * EN:
+ * @layer utilities — custom utility classes extending Tailwind's built-ins.
+ * Using @layer utilities ensures correct CSS specificity and allows
+ * standard Tailwind utilities to override these when needed.
+ */
 @layer utilities {
+  /**
+   * TH:
+   * .glass — Glassmorphism effect (semi-transparent + blur)
+   * ใช้กับ: Navbar บน hero section, floating badges, quick-view button
+   * backdrop-filter blur() ต้องการ content ด้านหลัง (background ไม่ใช่ solid)
+   *
+   * EN:
+   * .glass — glassmorphism card effect.
+   * Used on: Navbar when at the top, floating product badges, quick-view button.
+   * backdrop-filter requires non-solid content behind the element.
+   */
   .glass {
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(16px) saturate(180%);
@@ -56,6 +146,15 @@
     border: 1px solid rgba(255, 255, 255, 0.07);
   }
 
+  /**
+   * TH:
+   * .glass-strong — Glassmorphism ที่เข้มกว่า
+   * ใช้กับ Navbar เมื่อ scroll ลงมา (transition จาก transparent → glass-strong)
+   *
+   * EN:
+   * .glass-strong — stronger glassmorphism effect.
+   * Applied to the Navbar once the user scrolls past 20px from the top.
+   */
   .glass-strong {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(24px) saturate(200%);
@@ -63,6 +162,7 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
+  /* TH: Gradient backgrounds สำหรับ promo banner และ logo | EN: gradient backgrounds for promo banner and logo */
   .gradient-primary {
     background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
   }
@@ -71,6 +171,17 @@
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   }
 
+  /**
+   * TH:
+   * .gradient-text — ทำให้ text มีสี gradient
+   * เทคนิค: ใช้ background-clip: text ร่วมกับ -webkit-text-fill-color: transparent
+   * ใช้กับ "Peak Performance", "Favorites", "Perform Better" ใน section headings
+   *
+   * EN:
+   * .gradient-text — applies a gradient fill to text using the background-clip technique.
+   * Requires -webkit-text-fill-color: transparent to make the background show through.
+   * Used on highlighted words in SectionHeading components.
+   */
   .gradient-text {
     background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 40%, #6d28d9 100%);
     -webkit-background-clip: text;
@@ -85,6 +196,7 @@
     background-clip: text;
   }
 
+  /* TH: Glow effects — box-shadow สีม่วงและทอง สำหรับ CTA buttons | EN: glow effects for CTA buttons */
   .glow-primary {
     box-shadow: 0 0 40px rgba(124, 58, 237, 0.35), 0 0 80px rgba(124, 58, 237, 0.15);
   }
@@ -93,14 +205,27 @@
     box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
   }
 
+  /* TH: Drop shadow สำหรับ product cards | EN: elevation shadow for product cards */
   .card-shadow {
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
   }
 
+  /**
+   * TH:
+   * .noise — texture overlay บางๆ สำหรับ premium feel
+   * ใช้ SVG filter feTurbulence เพื่อสร้าง noise pattern โดยตรงใน CSS
+   * opacity 3% — แทบมองไม่เห็น แต่เพิ่มความลึกให้กับพื้นผิว
+   *
+   * EN:
+   * .noise — subtle noise texture overlay for a premium tactile feel.
+   * Generated via inline SVG feTurbulence filter — no image file required.
+   * At 3% opacity, it's barely perceptible but adds surface depth.
+   */
   .noise {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   }
 
+  /* TH: CSS text truncation — แสดง ellipsis หลัง 2 หรือ 3 บรรทัด | EN: CSS multi-line text truncation */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

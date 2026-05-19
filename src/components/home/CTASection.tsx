@@ -1,3 +1,45 @@
+/**
+ * TH:
+ * CTASection — Section สุดท้ายบนหน้าแรก ก่อน Footer
+ * ประกอบด้วย 2 cards แบบ side-by-side (responsive: stack → 2 cols lg)
+ *
+ * Card 1 — Explore CTA:
+ * - Icon + heading + description + 2 buttons
+ * - Slide ขึ้นจากซ้าย (direction="left")
+ *
+ * Card 2 — Newsletter CTA:
+ * - Email subscription form
+ * - State: email input, submitted flag
+ * - เมื่อ submit: แสดง success message แทน form
+ * - Slide ขึ้นจากขวา (direction="right")
+ *
+ * เป็น Client Component เพราะ:
+ * 1. useState สำหรับ email input value
+ * 2. useState สำหรับ submitted state
+ * 3. onSubmit event handler
+ * 4. Framer Motion animation บน success message
+ *
+ * EN:
+ * CTASection — the final homepage section before the Footer.
+ * Two side-by-side cards (stacked on mobile, 2-column on lg+).
+ *
+ * Card 1 — Explore CTA:
+ * - Sparkles icon + heading + description + 2 action buttons
+ * - Slides up from the left
+ *
+ * Card 2 — Newsletter CTA:
+ * - Email subscription form with submit handler
+ * - State: email value, submitted flag
+ * - On submit: replaces form with animated success message
+ * - Slides up from the right
+ *
+ * Client Component because:
+ * 1. useState for email input value
+ * 2. useState for submitted state (shows success message)
+ * 3. onSubmit event handler
+ * 4. Framer Motion animation on success message
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -9,9 +51,31 @@ import { Input } from "@/components/ui/input";
 import FadeIn from "@/components/common/FadeIn";
 
 export default function CTASection() {
+  /**
+   * TH:
+   * email — controlled input value สำหรับ newsletter form
+   * submitted — toggle ระหว่าง form view และ success message view
+   *
+   * EN:
+   * email — controlled value for the newsletter email input
+   * submitted — toggles between the form view and success message view
+   */
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  /**
+   * TH:
+   * handleSubmit — handle form submission
+   * e.preventDefault() — ป้องกัน page reload (default form behavior)
+   * ตรวจสอบ email ว่าไม่ว่าง ก่อน set submitted
+   * ใน production จะ call API endpoint สำหรับ newsletter subscription
+   *
+   * EN:
+   * handleSubmit — form submission handler.
+   * e.preventDefault() — prevents browser default page reload.
+   * Validates email is non-empty before setting submitted.
+   * In production, this would call a newsletter subscription API.
+   */
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
@@ -22,13 +86,16 @@ export default function CTASection() {
   return (
     <section className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* TH: 2 cards — stacked mobile, side-by-side lg | EN: 2-column layout on lg */}
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 lg:items-center">
-          {/* Explore CTA */}
+
+          {/* TH: Card 1 — Explore / Browse CTAs (slide from left) | EN: Card 1 — Explore CTAs */}
           <FadeIn direction="left">
             <div className="rounded-3xl border border-zinc-800/60 bg-zinc-900/40 p-8 sm:p-10">
               <Sparkles className="h-8 w-8 text-violet-400 mb-5" />
               <h2 className="font-display text-3xl font-bold text-zinc-100 sm:text-4xl">
                 Find Your Perfect
+                {/* TH: gradient-text ใน inline span | EN: gradient text in inline span */}
                 <span className="gradient-text"> Supplement Stack</span>
               </h2>
               <p className="mt-4 text-zinc-400">
@@ -51,10 +118,10 @@ export default function CTASection() {
             </div>
           </FadeIn>
 
-          {/* Newsletter CTA */}
+          {/* TH: Card 2 — Newsletter form (slide from right, delay 0.1s) | EN: Card 2 — Newsletter signup */}
           <FadeIn direction="right" delay={0.1}>
             <div className="relative overflow-hidden rounded-3xl border border-violet-800/30 bg-gradient-to-br from-violet-950/50 to-zinc-900/50 p-8 sm:p-10">
-              {/* BG glow */}
+              {/* TH: Background glow — decorative blur circle | EN: Decorative background glow */}
               <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-violet-600/10 blur-2xl" />
 
               <p className="mb-2 text-xs font-bold uppercase tracking-widest text-violet-400">
@@ -68,6 +135,15 @@ export default function CTASection() {
                 delivered straight to your inbox.
               </p>
 
+              {/**
+               * TH:
+               * Conditional render: submitted → success message, ไม่ submitted → form
+               * success message มี motion.div animation (scale-in) เพื่อ visual feedback
+               *
+               * EN:
+               * Conditional: submitted → animated success message, else → email form.
+               * Success message uses motion.div scale animation for visual feedback.
+               */}
               {submitted ? (
                 <motion.div
                   className="mt-8 rounded-xl bg-violet-600/20 border border-violet-500/30 px-5 py-4"

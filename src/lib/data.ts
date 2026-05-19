@@ -1,3 +1,37 @@
+/**
+ * TH:
+ * data.ts — ชั้นข้อมูลของโปรเจกต์ APEX
+ * ไฟล์นี้เป็น "database" แบบ static สำหรับ prototype/showcase
+ * ประกอบด้วย:
+ * - categories[] — 5 หมวดหมู่สินค้า
+ * - brands[] — 6 แบรนด์
+ * - products[] — 20 สินค้าพร้อมข้อมูลครบถ้วน
+ * - Query functions — สำหรับ filter/find ข้อมูล
+ *
+ * การ scale ไปสู่ production:
+ * แทนที่ query functions ด้วย API calls หรือ ORM queries
+ * interface ของ functions ยังคงเดิม — pages ไม่ต้องแก้ไข
+ *
+ * Images: ใช้ picsum.photos/seed/<name>/<w>/<h>
+ * Seeded URLs ให้ภาพสม่ำเสมอและไม่มี 404
+ *
+ * EN:
+ * data.ts — the data layer for the APEX project.
+ * This file acts as a static "database" for the prototype/showcase.
+ * Contains:
+ * - categories[] — 5 product categories
+ * - brands[] — 6 supplement brands
+ * - products[] — 20 fully-populated products
+ * - Query functions — for filtering and looking up data
+ *
+ * Scaling to production:
+ * Replace query function bodies with API calls or ORM queries.
+ * Function signatures stay the same — pages need no changes.
+ *
+ * Images: picsum.photos/seed/<name>/<w>/<h>
+ * Seeded URLs always return the same image and never 404.
+ */
+
 import type { Product, Category, Brand } from "@/types";
 
 export const categories: Category[] = [
@@ -561,30 +595,59 @@ export const products: Product[] = [
   },
 ];
 
+/**
+ * TH:
+ * Query Functions — ฟังก์ชัน helper สำหรับดึงข้อมูลจาก arrays ด้านบน
+ * ทุก function เป็น pure synchronous function
+ * ใช้แทน database queries ในขั้น prototype
+ *
+ * EN:
+ * Query Functions — helper functions for accessing data from the arrays above.
+ * All functions are pure and synchronous.
+ * Serve as database query substitutes at the prototype stage.
+ */
+
+/** TH: หา product จาก slug | EN: Find a single product by its URL slug */
 export function getProductBySlug(slug: string): Product | undefined {
   return products.find((p) => p.slug === slug);
 }
 
+/** TH: ดึงสินค้าทั้งหมดในหมวดหมู่ | EN: Get all products in a category */
 export function getProductsByCategory(categorySlug: string): Product[] {
   return products.filter((p) => p.categorySlug === categorySlug);
 }
 
+/** TH: ดึงสินค้าทั้งหมดของแบรนด์ | EN: Get all products from a brand */
 export function getProductsByBrand(brandSlug: string): Product[] {
   return products.filter((p) => p.brandSlug === brandSlug);
 }
 
+/** TH: ดึงสินค้าที่ featured: true (สำหรับหน้าแรก) | EN: Get products marked as featured (homepage section) */
 export function getFeaturedProducts(): Product[] {
   return products.filter((p) => p.featured);
 }
 
+/** TH: หา category จาก slug | EN: Find a category by its slug */
 export function getCategoryBySlug(slug: string): Category | undefined {
   return categories.find((c) => c.slug === slug);
 }
 
+/** TH: หา brand จาก slug | EN: Find a brand by its slug */
 export function getBrandBySlug(slug: string): Brand | undefined {
   return brands.find((b) => b.slug === slug);
 }
 
+/**
+ * TH:
+ * getAllFlavors — รวบรวม flavors ทั้งหมดจากทุกสินค้า (deduplicated, sorted)
+ * ใช้ Set เพื่อ deduplicate (ป้องกัน flavor ซ้ำ)
+ * ยังไม่ได้ใช้ใน UI แต่เตรียมไว้สำหรับ flavor filter
+ *
+ * EN:
+ * getAllFlavors — collects all unique flavors across all products (deduplicated, sorted).
+ * Uses Set to eliminate duplicates before converting to a sorted array.
+ * Not yet wired to UI — reserved for future flavor filter feature.
+ */
 export function getAllFlavors(): string[] {
   const flavors = new Set<string>();
   products.forEach((p) => p.flavors.forEach((f) => flavors.add(f)));
